@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<title>Your Account Details</title>
+<link rel="stylesheet" type="text/css"th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script type="text/javascript"th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+
+<body>
+
+	<div class="container-fluid">
+
+		<div>
+			<form th:action="@{/logout}" method="post" th:hidden="true"
+				name="logoutForm">
+				<input type="submit">
+			</form>
+			<nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+				<a class="navbar-brand m-0" th:href="@{/}"> <img alt=""
+					th:src="@{/images/ShopmeAdminSmall.png}">
+				</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse"
+					data-target="#topNavbar">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="topNavbar">
+					<ul class="navbar nav p-1">
+						<li class="nav-item"><a class="nav-link" th:href="@{/users}">Users</a>
+						</li>
+
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/categories}">Categories</a></li>
+
+						<li class="nav-item"><a class="nav-link" th:href="@{/brands}">Brands</a>
+						</li>
+
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/products}">Products</a></li>
+
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/customers}">Customers</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/sales}">Sales</a>
+						</li>
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/shipping}">Shipping</a></li>
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/salesReport}">Sales Report</a></li>
+						<!-- <li class="nav-item">
+						<a class="nav-link" th:href="@{/articles}">Articles</a>
+						</li> -->
+						<li class="nav-item"><a class="nav-link" th:href="@{/menu}">Menu</a>
+						</li>
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/setting}">Setting</a></li>
+						<li><span class="fas fa-user fa-2x icon-silver"></span></li>
+						<li class="nav-item dropdown">
+							    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+							th:href="@{/account}" sec:authentication="principal.fullName"
+							style="color: white;"></a>
+
+							<div class="dropdown-menu">
+								<a class="dropdown-item" id="profileDropdown"
+									th:href="@{/account}">Profile</a> <a class="dropdown-item"
+									id="logoutLink" href="">Logout</a>
+							</div>
+
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		<div>
+			<h2 class="text-center p-1">Your Account Details</h2>
+		</div>
+	
+	
+		<div th:if="${message != null}"
+			class="alert alert-success text-center">[[${message}]]</div>
+
+		<div>
+
+		<form th:action="@{/account/update}" method="post"
+			style="max-width: 700px; margin: 0 auto" enctype="multipart/form-data" 
+			th:object="${user}" >
+			<div class="border border-secondary rounded p-3">
+			<input type="hidden" th:field="*{id}">
+
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">Email:</label>
+					<div class="col-sm-8">
+						<input type="email" class="form-control" th:field="*{email}"
+							readonly="readonly">
+					</div>
+				</div>
+				
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">FirstName:</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" th:field="*{firstname}"
+							required="required" minlength="2" maxlength="45">
+					</div>
+				</div>
+				
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">LastName:</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" th:field="*{lastname}"
+							required="required" minlength="2" maxlength="45">
+					</div>
+				</div>
+				
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">Password:</label>
+					<div class="col-sm-8">
+						<input type="password"
+							placeholder="Leave Empty if you don't want to update the Password"
+							th:field="*{password}" class="form-control" minlength="2"
+							maxlength="45" oninput="checkpasswordmatch(document.getElementById('confirmPassword'))">
+					</div>
+				</div>
+				
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">Confirm Password:</label>
+					<div class="col-sm-8">
+						<input type="password"  id="confirmPassword"
+							class="form-control" minlength="2" maxlength="45" oninput="checkpasswordmatch(this)">
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">Roles:</label>
+					<div class="col-sm-8">
+						<span><b>[[${user.roles}]]</b></span>
+					</div>
+				</div>
+
+
+				<div class="form-group row">
+					<label class="col-sm-4 col-form-label">Photo:</label>
+					<div class="col-sm-8">
+					<input type="hidden" th:field="*{photos}">
+					<input type="file" id="fileImage" name="image" accept="image/png , image/jpg" class="mb-1">
+					<img id="thumbnail" alt="Photos preview" th:src="@{${user.photosImagePath}}"
+					class="rounded float-right img-fluid"/>
+					</div>
+				</div>
+				
+				
+
+				<div class="text-center ">
+				
+					<input type="submit" value="save" class="btn btn-primary m-3">
+					<input type="button" value="cancel" id="buttoncancel" class="btn btn-danger">
+				</div>
+
+			</div>
+		</form>
+
+		<div class="modal fade text-center" id="modalDialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title " id="modalTitle">Warning</h4>
+
+						<button type="button" class="close" data-dismiss="modal">
+							&times;</button>
+					</div>
+
+
+					<div class="modal-body">
+
+						<span id="modalBody"></span>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="text-center">
+			<p>Shopme Control panel - CopyRight &copy; Shopme</p>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#buttoncancel").on("click", function() {
+				window.location = "[[@{/users}]]";
+
+			});
+			
+			
+			$("#fileImage").change(function (){
+				
+				fileSize= this.files[0].size;
+				
+				if(fileSize > 1048576){
+					
+					this.setCustomValidity("You must choose an image less than 1MB ! ")
+					this.reportValidity();
+				} 
+				else
+				{
+					this.setCustomValidity("")
+					showImageThumbnail(this);
+					
+					
+				}
+				
+				
+			})
+			
+			
+
+		});
+		
+		
+		function showImageThumbnail(fileInput){
+			
+			var file=fileInput.files[0];
+			var reader= new FileReader();
+			reader.onload = function(e){
+				
+				$("#thumbnail").attr("src",e.target.result); 	
+			};
+			
+			reader.readAsDataURL(file);
+			
+		}
+		
+		
+		$(document).ready(function() {
+
+			$("#logoutLink").on("click", function(e) {
+
+				e.preventDefault();
+				document.logoutForm.submit();
+				
+				customizeDropDownMenu();
+
+			});
+
+		});
+		
+		
+		
+		function customizeDropDownMenu(){
+			 
+			 $(".dropdown > a").click(function(){
+				location.href= this.href; 
+				 
+				 
+			 });
+		 }
+		
+		
+	
+		function checkpasswordmatch(confirmPassword) {
+
+			if (confirmPassword.value != $("#password").val()) {
+				confirmPassword.setCustomValidity("Password do not Match");
+
+			} else {
+				confirmPassword.setCustomValidity("");
+
+			}
+
+		}
+	</script>
+</body>
+
+
+</html>
+
+
+
+
+
+
